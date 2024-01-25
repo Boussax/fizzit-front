@@ -22,3 +22,10 @@ export class Ferment {
   startDate: Date
   fermentationDuration: number
 }
+
+export type PartialFerment = {
+  name: string
+  type: string
+  startDate: Date
+  fermentationDuration: number
+}
