@@ -1,3 +1,4 @@
+import type { PartialFerment } from '@/assets/models/ferment'
 import axios from 'axios'
 
 const apiClient = axios.create({
@@ -16,5 +17,9 @@ export default {
 
   getFerment(id: number) {
     return apiClient.get('/ferments/' + id)
+  },
+
+  createFerment(ferment: PartialFerment) {
+    return apiClient.post('https://localhost:3000/ferments', ferment)
   }
 }
