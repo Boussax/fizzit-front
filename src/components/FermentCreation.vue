@@ -72,7 +72,6 @@ function sendForm(ferment: PartialFerment) {
       </div>
     </form>
   </div>
-  <pre>{{ ferment }}</pre>
 </template>
 
 <style scoped>
