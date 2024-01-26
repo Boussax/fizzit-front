@@ -23,7 +23,14 @@ export class Ferment {
   fermentationDuration: number
 }
 
-export type PartialFerment = {
+export class PartialFerment {
+  constructor() {
+    this.name = ''
+    this.type = ''
+    this.startDate = new Date()
+    this.fermentationDuration = 0
+  }
+
   name: string
   type: string
   startDate: Date
