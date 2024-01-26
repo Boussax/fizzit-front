@@ -20,6 +20,10 @@ export default {
   },
 
   createFerment(ferment: PartialFerment) {
-    return apiClient.post('http://localhost:3000/ferments', ferment)
+    return apiClient.post('/ferments', ferment)
+  },
+
+  deleteFerment(fermentId: number) {
+    return apiClient.delete('/ferments/' + fermentId)
   }
 }
