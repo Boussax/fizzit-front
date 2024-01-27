@@ -3,9 +3,10 @@ import router from '@/router'
 import FermentCard from '../components/FermentCard.vue'
 import FermentService from '../services/FermentService'
 import { ref, onMounted } from 'vue'
+import type { Ferment } from '@/assets/models/ferment'
 
 const ferments = ref()
-let selectedFerments: number[] = []
+const selectedFerments = ref<Array<number>>([])
 onMounted(() => {
   FermentService.getFerments()
     .then((response) => {
@@ -17,48 +18,51 @@ onMounted(() => {
 })
 
 function toggleFerment(id: number) {
-  const index = selectedFerments.findIndex((fermentId) => fermentId === id)
+  const index = selectedFerments.value.findIndex((fermentId) => fermentId === id)
   if (index === -1) {
     console.log('id not found in array')
-    selectedFerments.push(id)
+    selectedFerments.value.push(id)
   } else {
     console.log('id found in array')
-    selectedFerments.splice(index, 1)
+    selectedFerments.value.splice(index, 1)
   }
-  console.log(selectedFerments)
+  console.log(selectedFerments.value)
 }
 
 function deleteFerments() {
-  if (selectedFerments.length > 0) {
-    for (let index of selectedFerments) {
-      console.log('deleting ferment with id: ', selectedFerments[index])
-      FermentService.deleteFerment(selectedFerments[index]).then((response) => {
+  for (let id of selectedFerments.value as number[]) {
+    FermentService.deleteFerment(id)
+      .then((response) => {
         console.log(response)
-        selectedFerments = []
-        router.push({ name: 'dashboard' })
+        const index = ferments.value.findIndex((ferment: Ferment) => ferment.id === id)
+        ferments.value.splice(index, 1)
       })
-    }
-  } else {
-    console.log('no selected ferment to delete')
+      .catch((error) => console.log(error))
   }
+  selectedFerments.value = []
 }
 </script>
 
 <template>
   <main>
-    <div v-for="ferment in ferments" :key="ferment.id">
-      <input type="checkbox" @click="toggleFerment(ferment.id)" />
+    <div v-for="ferment in ferments" :key="ferment.id" class="dashboard-line">
       <FermentCard :ferment="ferment" />
+      <input type="checkbox" @click="toggleFerment(ferment.id)" />
     </div>
     <div class="footer">
       <RouterLink :to="{ name: 'ferment-creation' }" class="button-new">+</RouterLink>
-      <button @click="deleteFerments()">Delete selected ferments</button>
+      <button :disabled="selectedFerments.length === 0" @click="deleteFerments()">
+        Delete selected ferments
+      </button>
     </div>
   </main>
-  <pre>{{ selectedFerments }}</pre>
 </template>
 
 <style scoped>
+.dashboard-line {
+  display: flex;
+  align-items: center;
+}
 .button-new {
   display: flex;
   width: 30px;
