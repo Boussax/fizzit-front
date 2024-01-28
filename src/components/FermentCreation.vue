@@ -1,37 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { PartialFerment } from '@/assets/models/ferment'
+import FermentService from '@/services/FermentService'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import '@vuepic/vue-datepicker/dist/main.css'
+import BaseInput from './BaseInput.vue'
+import BaseSelect from './BaseSelect.vue'
+import { ref } from 'vue'
+import router from '@/router'
 
-const name = ref('')
-const type = ref('')
-const startDate = ref()
-const fermentationDuration = ref(0)
+const typeOptions: string[] = ['Ginger beer', 'Keffir', 'Kimchi', 'Kombucha', 'Sauerkraut', 'Other']
+const ferment = ref<PartialFerment>(new PartialFerment())
+const today = new Date()
+const TWO_WEEKS_IN_SECONDS = 14 * 24 * 60 * 60 * 1000
 
-const options = ref(['Ginger Beer', 'Keffir', 'Kombucha', 'Sauerkraut'])
+function checkPartialFerment(ferment: PartialFerment) {
+  if (ferment.name === '') {
+    console.log('name not set')
+    return false
+  }
+  if (ferment.type === '') {
+    console.log('type not set')
+    return false
+  }
+  if (ferment.fermentationDuration === 0) {
+    console.log('duration not set')
+    return false
+  }
+  return true
+}
+function sendForm(ferment: PartialFerment) {
+  if (checkPartialFerment(ferment)) {
+    FermentService.createFerment(ferment)
+      .then((response) => {
+        console.log(response)
+        router.push({ path: '/' })
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  } else {
+    console.log('please set a name, type and duration')
+  }
+}
 </script>
 
 <template>
   <div class="wrapper">
-    <div class="ferment-info-form">
-      <label for="name">Name</label>
-      <input v-model="name" placeholder="edit me" />
-      <label for="type">Ferment type</label>
-      <select v-model="type" placeholder="choose ferment type">
-        <option v-for="(option, index) in options" :value="option" :key="index">
-          {{ option }}
-        </option>
-      </select>
-      <label for="startDate">Started on</label>
+    <form @submit.prevent="sendForm(ferment)" class="ferment-info-form">
+      <BaseInput v-model="ferment.name" type="text" label="Name" />
 
-      <VueDatePicker v-model="startDate"></VueDatePicker>
-      <label>Theoratical fermentation duration (in days)</label>
-      <input v-model="fermentationDuration" type="number" placeholder="edit me" />
-    </div>
-    <div class="form-footer">
-      <RouterLink :to="{ name: 'dashboard' }" class="cancel button">Cancel</RouterLink>
-      <RouterLink :to="{ name: 'dashboard' }" class="create button">Create</RouterLink>
-    </div>
+      <BaseSelect v-model="ferment.type" label="Ferment Type" :options="typeOptions" />
+
+      <label for="startDate">Started on</label>
+      <VueDatePicker
+        v-model="ferment.startDate"
+        :max-date="today"
+        :min-date="new Date(today.getTime() - TWO_WEEKS_IN_SECONDS)"
+      ></VueDatePicker>
+
+      <BaseInput
+        v-model="ferment.fermentationDuration"
+        type="number"
+        label="Theoretical fermentation duration (in days)"
+      />
+
+      <div class="form-footer">
+        <RouterLink :to="{ name: 'dashboard' }" class="cancel button">Cancel</RouterLink>
+        <button type="submit" @submit.prevent="sendForm(ferment)" class="create button">
+          Create
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
