@@ -20,20 +20,16 @@ onMounted(() => {
 function toggleFerment(id: number) {
   const index = selectedFerments.value.findIndex((fermentId) => fermentId === id)
   if (index === -1) {
-    console.log('id not found in array')
     selectedFerments.value.push(id)
   } else {
-    console.log('id found in array')
     selectedFerments.value.splice(index, 1)
   }
-  console.log(selectedFerments.value)
 }
 
 function deleteFerments() {
   for (let id of selectedFerments.value as number[]) {
     FermentService.deleteFerment(id)
-      .then((response) => {
-        console.log(response)
+      .then(() => {
         const index = ferments.value.findIndex((ferment: Ferment) => ferment.id === id)
         ferments.value.splice(index, 1)
       })
