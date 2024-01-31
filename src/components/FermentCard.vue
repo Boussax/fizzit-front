@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { Ferment } from '@/assets/models/ferment'
+
 defineProps({
   ferment: {
-    type: Object,
+    type: Ferment,
     required: true
   }
 })
@@ -10,10 +12,11 @@ defineProps({
 <template>
   <RouterLink class="ferment-link" :to="{ name: 'ferment-details', params: { id: ferment.id } }">
     <div class="ferment-miniature">
-      <h1 class="ferment-title">{{ ferment.name }}</h1>
+      <h1>{{ ferment.name }}</h1>
+      <h2>{{ ferment.type }}</h2>
       <div class="ferment-dates">
-        <span>{{ new Intl.DateTimeFormat('fr-FR').format(ferment.startDate) }}</span>
-        <span>{{ ferment.startDate }}</span>
+        <span>{{ ferment.startDate }}D</span>
+        <span>{{ ferment.fermentationDuration }} days</span>
       </div>
     </div>
   </RouterLink>
@@ -26,16 +29,19 @@ defineProps({
   color: aliceblue;
   background-color: brown;
   margin: 4px;
-}
-
-.ferment-title {
-  align-self: center;
+  > * {
+    align-self: center;
+  }
 }
 .ferment-dates {
   display: flex;
   font-size: larger;
   margin: 0 50px;
   justify-content: space-between;
+  align-items: center;
+  > * {
+    margin: 0 4px;
+  }
 }
 
 .ferment-link {
