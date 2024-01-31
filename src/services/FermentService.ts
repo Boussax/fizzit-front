@@ -25,5 +25,7 @@ export default {
     return apiClient.post('/ferments', ferment)
   },
 
+  deleteFerment(fermentId: number) {
+    return apiClient.delete('/ferments/' + fermentId)
   }
 }
